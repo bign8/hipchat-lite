@@ -34,7 +34,7 @@ html, body {
 	-o-box-sizing:border-box;
 	-moz-box-sizing:border-box;
 }
-.chat_wrapper .message_box .uname { 
+.chat_wrapper .message_box .nick { 
 	text-align: right;
 	font-weight: bold;
 	position: absolute;
@@ -60,8 +60,8 @@ html, body {
 	bottom: 10px;
 }
 .chat_wrapper .panel .span { float: left; position: relative; }
-.chat_wrapper .panel .span-sm { width: 18.5%; }
-.chat_wrapper .panel .span-lg { width: 60%; margin: 0 1.5%; }
+.chat_wrapper .panel .span-sm { width: 20%; }
+.chat_wrapper .panel .span-lg { width: 78.5%; margin: 0 1.5% 0 0; }
 .chat_wrapper .panel input,
 .chat_wrapper .panel button {
 	padding: 2px;

@@ -1,0 +1,17 @@
+{
+  "name": "Git-Chat-GUI",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "version": "0.0.0",
+  "description": "Git Chat server gui",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~4.2.0",
+    "socket.io": "~0.9.16",
+    "sqlite3": "~2.2.3"
+  },
+  "devDependencies": {},
+  "author": "Nathan Woods",
+  "license": "BSD-2-Clause"
+}
