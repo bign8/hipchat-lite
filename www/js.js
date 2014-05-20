@@ -1,57 +1,62 @@
-var socket = io.connect('http://localhost'),
-	output = document.getElementById('message_box'),
-	form = document.chat;
+angular.module('git-chat', []).
 
-// Messsage connections
-socket.on('connect', function() {
-	socket.emit('join', 0);
-});
-socket.on('message', function (data) {
-	add_msg(data.msg, data.name, data.stamp);
-});
+// http://www.html5rocks.com/en/tutorials/frameworks/angular-websockets/
+factory('socket', ['$rootScope', function ($rootScope) {
+	var socket = io.connect('http://localhost');
 
-// Sending messages
-var Active_Room = 0;
-form.addEventListener('submit', function (e){
-	if (e.preventDefault) e.preventDefault();
-	if (form.message.value != '') socket.emit('message', {
-		roomID: Active_Room,
-		msg: form.message.value,
-		stamp: (new Date()).toISOString(),
+	socket.emit('join', 0); // helper (for now)
+
+	var update = function (cb) {
+		return function () {
+			var args = arguments;
+			$rootScope.$apply(function () {
+				if (cb) cb.apply(socket, args);
+			});
+		};
+	};
+	return {
+		on: function (eventName, cb) {
+			socket.on(eventName, update(cb));
+		},
+		emit: function (eventName, data, cb) {
+			socket.emit(eventName, data, update(cb));
+		}
+	};
+}]).
+
+// Wrong! home tab should list all rooms (side should show listening rooms)
+controller('list', ['$scope', 'socket', function ($scope, socket) {
+	$scope.list = [];
+	socket.emit('getRooms', undefined, function (err, data) {
+		$scope.list = data;
 	});
-	form.message.value = '';
-	return false;
-});
+}]).
 
-// Adding message
-var add_msg = function (msg, name, time) {
-	time = new Date(time);
-	time = time.toLocaleTimeString(undefined, {hour:'numeric', minute:'2-digit'});
-	name = name ? name : 'Unknown';
-	msg = parse_msg(msg);
+controller('send', ['$scope', 'socket', function ($scope, socket) {
+	$scope.send = function () {
+		socket.emit('message', {
+			roomID: 0,
+			msg: $scope.msg
+		});
+		$scope.msg = '';
+	};
+}]).
 
-	var last = output.lastChild;
-	if (
-		last &&
-		last.querySelector('.nick').innerHTML == name &&
-		last.querySelector('.time').innerHTML == time
-	) {
-		last.querySelector('.msg').innerHTML += '<br/>' + msg;
-	} else {
-		var ele = document.createElement('div');
-		ele.innerHTML = '<div class="nick">' + name + '</div>';
-		ele.innerHTML += '<div class="msg"><div class="time">' + time + '</div>' +  msg + '</div>';
-		output.appendChild(ele);
-	}
-};
-
-// Message parsing
-var parse_msg = function (msg) {
-	// http://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url
-	var regex = /(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*))/;
-
-	msg = msg.replace(regex, function (rep) {
-		return '<a href="' + rep + '" target="_blank">' + rep + '</a>';
+controller('hist', ['$scope', 'socket', function ($scope, socket) {
+	$scope.msgs = [];
+	socket.on('message', function (data) {
+		$scope.msgs.push(data);
 	});
-	return msg;
-};
+}]).
+
+// http://codepen.io/y__b__y/pen/afFec + http://stackoverflow.com/a/17364716/3220865
+directive('ngEnter', function() {
+	return function (scope, ele, attr) {
+		ele.bind('keydown keypres', function (e) {
+			if (e.keyCode === 13 && !e.shiftKey) {
+				e.preventDefault();
+				scope.$apply(attr.ngEnter);
+			}
+		});
+	};
+});

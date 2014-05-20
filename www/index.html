@@ -7,21 +7,57 @@
 	
 	<title>Chat Demo</title>
 	<link rel="stylesheet" href="css.css">
-
-	<script src="/socket.io/socket.io.js"></script>
 </head>
-<body>
-	<div class="chat_wrapper">
-		<div class="message_box" id="message_box"></div>
-		<form name="chat" class="panel">
-			<div class="span span-lg">
-				<input type="text" name="message" id="message" placeholder="Message" maxlength="250" />
-			</div>
-			<div class="span span-sm">
-				<button type="submit" id="send-btn">Send</button>
-			</div>
+<body ng-app="git-chat">
+	<div class="left">
+		<div class="logo">
+			<a href="#"><img src="#" alt="GChat" height="58"></a>
+		</div>
+		<ul class="tabs" ng-controller="list">
+			<li id="lobby"><a href="#">Lobby</a></li>
+			<li ng-repeat="room in list">
+				<a href="#">{{room.name}}</a>
+			</li>
+			<!-- <li><pre>{{list | json}}</pre></li> -->
+		</ul>
+		<div class="status">
+			<a href="#">Status</a>
+		</div>
+	</div>
+
+	<div class="right">
+		<div id="panel-lobby">
+			Awesome Stuff!
+		</div>
+		<div id="panel-proj">
+			Git stuff
+			Samba Stuff
+			Proj Admin
+				Change meta
+				change proj name
+			Guest access
+		</div>
+		<div id="panel-room">
+			Who is a member / status / last seen
+			guest access
+		</div>
+		<div id="panel-user">
+			IDK
+		</div>
+	</div>
+
+	<div class="main" ng-controller="hist">
+		<pre>{{msgs | json}}</pre>
+	</div>
+
+	<div class="input" ng-controller="send">
+		<form name="messageForm" ng-submit="send">
+			<textarea autocomplete="off" id="message_input" ng-enter="send()" ng-model="msg"></textarea>
 		</form>
 	</div>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/angular.min.js"></script>
 	<script src="js.js"></script>
 </body>
 </html>

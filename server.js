@@ -7,8 +7,6 @@ var express = require('express'), app = express(),
 
 // Data storage
 Viewing = {}; // in ram (built from user-meta) (read from db on connect)
-// Messages = {}; // periodically backed up to files
-
 app.use( express.static(__dirname + '/www') );
 
 io.sockets.on('connection', function (socket) {
@@ -56,10 +54,16 @@ io.sockets.on('connection', function (socket) {
 			user.status = false;
 			socket.broadcast.emit('status', user);
 		});
+		// TODO: Delete socket.id from Viewing!
 	});
-	store.getUserFromIP(socket.handshake.address.address, function (user) { // Init user logon
+	store.getUserFromIP(socket.handshake.address.address, function (err, user) { // Init user logon
 		socket.set('user', user, function () {
 			socket.broadcast.emit('status', user);
 		});
+	});
+
+	// Init Client
+	socket.on('getRooms', function (data, cb) {
+		store.getRooms(cb);
 	});
 });
