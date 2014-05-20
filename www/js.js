@@ -1,5 +1,20 @@
 angular.module('git-chat', []).
 
+// config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+// 	$locationProvider.html5Mode(true).hashPrefix('!');
+
+// 	$routeProvider.when('/private/:nick', {
+// 		templateUrl: 'tpl/private.sidebar.html',
+// 	}).
+// 	when('/room/:id', {
+// 		templateUrl: 'tpl/room.sidebar.html',
+// 	}).
+// 	when('/', {
+// 		templateUrl: 'tpl/lobby.sidebar.html',
+// 	}).
+// 	otherwise({redirectTo: '/'});
+// }]).
+
 // http://www.html5rocks.com/en/tutorials/frameworks/angular-websockets/
 factory('socket', ['$rootScope', function ($rootScope) {
 	var socket = io.connect('http://localhost');
@@ -30,12 +45,19 @@ controller('list', ['$scope', 'socket', function ($scope, socket) {
 	socket.emit('getRooms', undefined, function (err, data) {
 		$scope.list = data;
 	});
+
+	$scope.activeItem = null;
+	$scope.setActive = function (item) {
+		if ($scope.activeItem) $scope.activeItem.active = false;
+		$scope.activeItem = item;
+		if ($scope.activeItem) $scope.activeItem.active = true;
+	};
 }]).
 
 controller('send', ['$scope', 'socket', function ($scope, socket) {
 	$scope.send = function () {
 		socket.emit('message', {
-			roomID: 0,
+			roomID: 0, // how to set this?
 			msg: $scope.msg
 		});
 		$scope.msg = '';

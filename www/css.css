@@ -87,6 +87,14 @@ body > div { position: absolute; }
 .left .tabs li:hover a {
 	color: #fff;
 }
+.left .tabs li.active {
+	border-top: 1px solid #1A1F28;
+	background-color: #242B38;
+}
+.left .tabs li.active a {
+	color: #fff;
+}
+
 
 /* left status */
 .left .status {

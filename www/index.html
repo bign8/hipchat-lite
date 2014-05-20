@@ -14,11 +14,13 @@
 			<a href="#"><img src="#" alt="GChat" height="58"></a>
 		</div>
 		<ul class="tabs" ng-controller="list">
-			<li id="lobby"><a href="#">Lobby</a></li>
-			<li ng-repeat="room in list">
-				<a href="#">{{room.name}}</a>
+			<li id="lobby" ng-class="{'active':!activeItem}" >
+				<a href="#" ng-click="setActive(null)">Lobby</a>
 			</li>
-			<!-- <li><pre>{{list | json}}</pre></li> -->
+			<li ng-repeat="room in list" class="ng-cloak" ng-class="{'active':room.active}" >
+				<a href="#" ng-click="setActive(room)">{{room.name}}</a>
+			</li>
+			<li><pre>{{list | json}}</pre></li>
 		</ul>
 		<div class="status">
 			<a href="#">Status</a>
