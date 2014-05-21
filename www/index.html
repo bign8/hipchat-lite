@@ -32,11 +32,23 @@
 	</div>
 
 	<div class="main" ng-controller="hist" ng-switch="routeParams.room_id">
-		<div ng-switch-when="undefined">
+		<div ng-hide="routeParams.room_id">
 			Lobby html	
 		</div>
-		<div ng-switch-default>
-			<pre>{{msgs | filter:{room_id:routeParams.room_id} | json}}</pre>
+		<!-- TODO: simplify following DOM -->
+		<div ng-repeat="msg in temp = (msgs | filter:{room_id:routeParams.room_id})" ng-show="routeParams.room_id" class="chat">
+			<div ng-if="new_date($index, temp)" class="date-divider">
+				{{msg.stamp | date:'EEEE MMMM d, yyyy'}}
+			</div>
+			<div class="message me">
+				<div class="name">{{msg.name}}</div>
+				<div class="body">
+					<div class="time">{{msg.stamp | date:'h:mm a'}}</div>
+					<div class="txt">{{msg.msg}}</div>
+				</div>
+			</div>
+
+			<!-- <pre>{{msgs | filter:{room_id:routeParams.room_id} | json}}</pre> -->
 		</div>
 	</div>
 

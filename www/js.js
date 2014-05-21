@@ -81,9 +81,11 @@ controller('list', ['$scope', 'socket', '$routeParams', '$location', function ($
 controller('send', ['$scope', 'socket', '$routeParams', function ($scope, socket, $routeParams) {
 	$scope.routeParams = $routeParams;
 	$scope.send = function () {
+		if (!$scope.msg) return;
 		socket.emit('message', {
 			room_id: $routeParams.room_id, // how to set this?
-			msg: $scope.msg
+			msg: $scope.msg,
+			stamp: Date.now(),
 		});
 		$scope.msg = '';
 	};
@@ -93,8 +95,18 @@ controller('hist', ['$scope', 'socket', '$routeParams', function ($scope, socket
 	$scope.routeParams = $routeParams;
 	$scope.msgs = [];
 	socket.on('message', function (data) {
+		data.stamp = new Date( data.stamp );
 		$scope.msgs.push(data);
+
+		// trim q based on # of messages
+		var max_msg = 1e3;
+		if ($scope.msgs.length > max_msg) $scope.msgs.splice(0, $scope.msgs.length - max_msg);
 	});
+
+	$scope.new_date = function(idx, arr) {
+		if (!idx) return true;
+		return arr[idx].stamp.toDateString() != arr[idx-1].stamp.toDateString();
+	};
 }]).
 
 // http://codepen.io/y__b__y/pen/afFec + http://stackoverflow.com/a/17364716/3220865
