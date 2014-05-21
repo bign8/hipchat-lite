@@ -1,25 +1,32 @@
-angular.module('git-chat', []).
+angular.module('git-chat', [
+	'ngRoute'
+]).
 
-// config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
-// 	$locationProvider.html5Mode(true).hashPrefix('!');
+config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+	$locationProvider.html5Mode(true).hashPrefix('!');
 
-// 	$routeProvider.when('/private/:nick', {
-// 		templateUrl: 'tpl/private.sidebar.html',
-// 	}).
-// 	when('/room/:id', {
-// 		templateUrl: 'tpl/room.sidebar.html',
-// 	}).
-// 	when('/', {
-// 		templateUrl: 'tpl/lobby.sidebar.html',
-// 	}).
-// 	otherwise({redirectTo: '/'});
-// }]).
+	$routeProvider.
+	when('/private/:room_id', {
+		templateUrl: '/tpl/private.sidebar.html',
+		// controller: 'private',
+	}).
+	when('/public/:room_id', {
+		templateUrl: '/tpl/public.sidebar.html',
+		controller: 'public',
+	}).
+	when('/', {
+		templateUrl: '/tpl/lobby.sidebar.html',
+		// controller: 'all',
+	}).
+	otherwise({redirectTo: '/'});
+}]).
 
 // http://www.html5rocks.com/en/tutorials/frameworks/angular-websockets/
 factory('socket', ['$rootScope', function ($rootScope) {
 	var socket = io.connect('http://localhost');
 
-	socket.emit('join', 0); // helper (for now)
+	socket.emit('join', 1); // helper (for now)
+	socket.emit('join', 2); // helper (for now)
 
 	var update = function (cb) {
 		return function () {
@@ -39,11 +46,28 @@ factory('socket', ['$rootScope', function ($rootScope) {
 	};
 }]).
 
+// controller('alls', ['$scope', 'socket', '$routeParams', function ($scope, socket, $routeParams) {
+// 	console.log($routeParams);
+// 	$scope.x = 'asdf';
+// }]).
+
+controller('public', ['$scope', 'socket', function ($scope, socket) {
+	$scope.room = {
+		asdf: 'asdf',
+	};
+}]).
+
 // Wrong! home tab should list all rooms (side should show listening rooms)
-controller('list', ['$scope', 'socket', function ($scope, socket) {
+controller('list', ['$scope', 'socket', '$routeParams', '$location', function ($scope, socket, $routeParams, $location) {
 	$scope.list = [];
 	socket.emit('getRooms', undefined, function (err, data) {
 		$scope.list = data;
+
+		// Open appropriate room or redirect as necessary
+		if ($routeParams.room_id) {
+			for (var i = 0, len = data.length; i < len; i++) if ($routeParams.room_id == data[i].room_id) $scope.setActive( data[i] );
+			if (!$scope.activeItem) $location.path('/'); // failed to find room
+		}
 	});
 
 	$scope.activeItem = null;
@@ -54,17 +78,19 @@ controller('list', ['$scope', 'socket', function ($scope, socket) {
 	};
 }]).
 
-controller('send', ['$scope', 'socket', function ($scope, socket) {
+controller('send', ['$scope', 'socket', '$routeParams', function ($scope, socket, $routeParams) {
+	$scope.routeParams = $routeParams;
 	$scope.send = function () {
 		socket.emit('message', {
-			roomID: 0, // how to set this?
+			room_id: $routeParams.room_id, // how to set this?
 			msg: $scope.msg
 		});
 		$scope.msg = '';
 	};
 }]).
 
-controller('hist', ['$scope', 'socket', function ($scope, socket) {
+controller('hist', ['$scope', 'socket', '$routeParams', function ($scope, socket, $routeParams) {
+	$scope.routeParams = $routeParams;
 	$scope.msgs = [];
 	socket.on('message', function (data) {
 		$scope.msgs.push(data);

@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	<title>Chat Demo</title>
-	<link rel="stylesheet" href="css.css">
+	<link rel="stylesheet" href="/css.css">
 </head>
 <body ng-app="git-chat">
 	<div class="left">
@@ -15,12 +15,12 @@
 		</div>
 		<ul class="tabs" ng-controller="list">
 			<li id="lobby" ng-class="{'active':!activeItem}" >
-				<a href="#" ng-click="setActive(null)">Lobby</a>
+				<a href="/" ng-click="setActive(null)">Lobby</a>
 			</li>
 			<li ng-repeat="room in list" class="ng-cloak" ng-class="{'active':room.active}" >
-				<a href="#" ng-click="setActive(room)">{{room.name}}</a>
+				<a ng-href="/{{room.privacy}}/{{room.room_id}}" ng-click="setActive(room)">{{room.name}}</a>
 			</li>
-			<li><pre>{{list | json}}</pre></li>
+			<!-- <li><pre>{{list | json}}</pre></li> -->
 		</ul>
 		<div class="status">
 			<a href="#">Status</a>
@@ -28,31 +28,19 @@
 	</div>
 
 	<div class="right">
-		<div id="panel-lobby">
-			Awesome Stuff!
+		<ng-view></ng-view>
+	</div>
+
+	<div class="main" ng-controller="hist" ng-switch="routeParams.room_id">
+		<div ng-switch-when="undefined">
+			Lobby html	
 		</div>
-		<div id="panel-proj">
-			Git stuff
-			Samba Stuff
-			Proj Admin
-				Change meta
-				change proj name
-			Guest access
-		</div>
-		<div id="panel-room">
-			Who is a member / status / last seen
-			guest access
-		</div>
-		<div id="panel-user">
-			IDK
+		<div ng-switch-default>
+			<pre>{{msgs | filter:{room_id:routeParams.room_id} | json}}</pre>
 		</div>
 	</div>
 
-	<div class="main" ng-controller="hist">
-		<pre>{{msgs | json}}</pre>
-	</div>
-
-	<div class="input" ng-controller="send">
+	<div class="input" ng-controller="send" ng-show="routeParams.room_id">
 		<form name="messageForm" ng-submit="send">
 			<textarea autocomplete="off" id="message_input" ng-enter="send()" ng-model="msg"></textarea>
 		</form>
@@ -60,7 +48,8 @@
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/angular.min.js"></script>
-	<script src="js.js"></script>
+	<script src="/angular-route.min.js"></script>
+	<script src="/js.js"></script>
 </body>
 </html>
 
