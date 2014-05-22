@@ -2,6 +2,6 @@
 	<gravatar email="user.email" size="100" default-image="'mm'"></gravatar>
 	<h4>{{user.name}}</h4>
 	<p class="title">{{user.title}}</p>
-	<p class="status">{{user.status ? 'Active' : 'Inactive'}}</p>
+	<p class="status" user-status="user"></p>
 	<a ng-href="mailto:{{user.email}}">{{user.email}}</a>
 </div>
