@@ -3,8 +3,8 @@
 img { border: 0; }
 body, html {
 	background-color: #fff;
-	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-	font-size: 1em;
+	font-family: "Lucida Grande",arial,sans-serif;
+	font-size: 13px;
 }
 
 /* main layout */
@@ -185,3 +185,34 @@ body > div { position: absolute; }
 	border-color: #BED6EB;
 }
 /* end message colors */
+
+/* panel styles */
+.right > .private {
+	text-align: center;
+	margin-top: 40px;
+}
+.right > .private > img {
+	border-radius: 10px;
+}
+.right > .public {
+	padding: 5px;
+}
+.right > .public .members {
+	list-style: none;
+}
+.right > .public .members li {
+	/*line-height: 30px;*/
+	display: block;
+	clear:both;
+	padding-bottom: 4px;
+	overflow: hidden;
+}
+.right > .public .members li img {
+	float: left;
+}
+.right > .public .members li p {
+	margin: 3px 0 0px 43px;
+}
+.right > .public .members li .name {
+	font-weight: bold;
+}

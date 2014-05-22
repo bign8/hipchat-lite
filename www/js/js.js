@@ -1,5 +1,6 @@
 angular.module('git-chat', [
-	'ngRoute'
+	'ngRoute',
+	'gravatar',
 ]).
 
 config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
@@ -8,7 +9,7 @@ config(['$routeProvider', '$locationProvider', function ($routeProvider, $locati
 	$routeProvider.
 	when('/private/:room_id', {
 		templateUrl: '/tpl/private.sidebar.html',
-		// controller: 'private',
+		controller: 'private',
 	}).
 	when('/public/:room_id', {
 		templateUrl: '/tpl/public.sidebar.html',
@@ -46,14 +47,48 @@ factory('socket', ['$rootScope', function ($rootScope) {
 	};
 }]).
 
-// controller('alls', ['$scope', 'socket', '$routeParams', function ($scope, socket, $routeParams) {
-// 	console.log($routeParams);
-// 	$scope.x = 'asdf';
-// }]).
+controller('private', ['$scope', 'socket', '$routeParams', function ($scope, socket, $routeParams) {
+	$scope.user = {
+		name: 'Nathan Woods',
+		title: 'Developer',
+		email: 'big.nate.w@gmail.com',
+		status: true, // number is minutes since inactive, false is offline (make directive for icon + txt)
+	};
+}]).
 
 controller('public', ['$scope', 'socket', function ($scope, socket) {
-	$scope.room = {
-		asdf: 'asdf',
+	$scope.members = [{
+		name: 'Nathan Woods',
+		title: 'Developer',
+		email: 'big.nate.w@gmail.com',
+		status: true,
+	},{
+		name: 'Barney',
+		title: 'Janitor',
+		email: 'one@one.com',
+		status: 230,
+	},{
+		name: 'Albert',
+		title: 'Janitor',
+		email: 'one@one.com',
+		status: 10,
+	},{
+		name: 'Charlie',
+		title: 'Boss-man',
+		email: 'two@one.com',
+		status: false,
+	}];
+}]).
+
+directive('renderStatus', function () {
+
+}).
+
+filter('orderByStatus', ['$filter', function ($filter) {
+	var isNotTrue = function (value) { return value.status !== true;  };
+	var isFalse = function (value) { return value.status === false; };
+	return function (array) {
+		return $filter('orderBy')(array, [isNotTrue, isFalse, 'status', 'name']);
 	};
 }]).
 

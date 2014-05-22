@@ -1,8 +1,13 @@
-public
+<div class="public">
+	<ul class="members">
+		<li ng-repeat=" user in members | orderByStatus ">
+			<gravatar email="user.email" size="40" default-image="'mm'"></gravatar>
+			<p class="name">{{user.name}}</p>
+			<p class="status">{{user.status ? 'Active' : 'Inactive'}}</p>
+		</li>
+	</ul>
 
-<div id="panel-room">
-	Who is a member / status / last seen
-	guest access
+	guest access...
 </div>
 
-<pre>{{room | json}}</pre>
+<!-- <pre>{{members | json}}</pre> -->
