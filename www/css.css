@@ -216,3 +216,7 @@ body > div { position: absolute; }
 .right > .public .members li .name {
 	font-weight: bold;
 }
+
+small {
+	color: #999;
+}

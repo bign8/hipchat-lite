@@ -3,7 +3,7 @@
 		<li ng-repeat=" user in members | orderByStatus ">
 			<gravatar email="user.email" size="40" default-image="'mm'"></gravatar>
 			<p class="name">{{user.name}}</p>
-			<p class="status">{{user.status ? 'Active' : 'Inactive'}}</p>
+			<p class="status" user-status="user"></p>
 		</li>
 	</ul>
 

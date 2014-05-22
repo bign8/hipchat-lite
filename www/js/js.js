@@ -80,8 +80,31 @@ controller('public', ['$scope', 'socket', function ($scope, socket) {
 	}];
 }]).
 
-directive('renderStatus', function () {
-
+directive('userStatus', function () {
+	return {
+		template: '{{status}} <small ng-show="delay">{{delay}}</small>',
+		scope: {
+			userStatus: '=',
+		},
+		link: function ($scope, $ele, $attrs) {
+			var parse_delay = function (minutes) {
+				// A different design should be used!
+				return minutes + 'm';
+			};
+			var update = function (value) {
+				if (typeof($scope.userStatus.status) === 'boolean') {
+					$scope.status = $scope.userStatus.status ? 'Active' : 'Inactive';
+					$scope.delay = undefined;
+				} else {
+					$scope.status = 'Away';
+					$scope.delay = parse_delay( $scope.userStatus.status );
+				}
+				// TODO: image support
+			};
+			$scope.$watch('userStatus', update);
+			update();
+		}
+	};
 }).
 
 filter('orderByStatus', ['$filter', function ($filter) {
