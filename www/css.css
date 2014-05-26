@@ -220,3 +220,21 @@ body > div { position: absolute; }
 small {
 	color: #999;
 }
+
+.userStatus:before {
+	height: 12px;
+	width: 12px;
+	line-height: 12px;
+	content: ' ';
+	display: inline-block;
+	margin-right: 3px;
+}
+.userStatus.active:before {
+	background: radial-gradient(ellipse at center, rgba(181,227,145,1) 0%,rgba(97,197,25,1) 64%,rgba(97,197,25,0) 73%); /* W3C */
+}
+.userStatus.away:before {
+	background: radial-gradient(ellipse at center, rgba(255,217,48,1) 0%,rgba(222,91,37,1) 64%,rgba(221,89,37,0) 73%); /* W3C */
+}
+.userStatus.inactive:before {
+	background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%,rgba(213,213,213,1) 64%,rgba(212,212,212,0) 73%); /* W3C */
+}

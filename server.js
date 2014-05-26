@@ -6,7 +6,8 @@ var express = require('express'), app = express(),
 	store = require('./lib/store.js');
 
 // Data storage
-Viewing = {}; // in ram (built from user-meta) (read from db on connect)
+var Viewing = {}; // in ram (built from user-meta) (read from db on connect)
+var Users = {}; // track all online user statuses
 app.use( express.static(__dirname + '/www') );
 
 io.sockets.on('connection', function (socket) {
@@ -44,20 +45,24 @@ io.sockets.on('connection', function (socket) {
 
 	// Managing user statuses
 	socket.on('status', function (status) {
+		console.log(status);
 		socket.get('user', function (err, user) {
 			user.status = status;
+			Users[user.user_id] = user;
 			socket.broadcast.emit('status', user);
 		});
 	});
 	socket.on('disconnect', function () {
 		socket.get('user', function (err, user) {
 			user.status = false;
+			delete Users[user.user_id];
 			socket.broadcast.emit('status', user);
 		});
 		// TODO: Delete socket.id from Viewing!
 	});
 	store.getUserFromIP(socket.handshake.address.address, function (err, user) { // Init user logon
 		socket.set('user', user, function () {
+			Users[user.userID] = user;
 			socket.broadcast.emit('status', user);
 		});
 	});

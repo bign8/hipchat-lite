@@ -1,3 +1,5 @@
+var test = undefined;
+
 angular.module('git-chat', [
 	'ngRoute',
 	'gravatar',
@@ -25,6 +27,7 @@ config(['$routeProvider', '$locationProvider', function ($routeProvider, $locati
 // http://www.html5rocks.com/en/tutorials/frameworks/angular-websockets/
 factory('socket', ['$rootScope', function ($rootScope) {
 	var socket = io.connect('http://localhost');
+	test = socket;
 
 	socket.emit('join', 1); // helper (for now)
 	socket.emit('join', 2); // helper (for now)
@@ -66,12 +69,12 @@ controller('public', ['$scope', 'socket', function ($scope, socket) {
 		name: 'Barney',
 		title: 'Janitor',
 		email: 'one@one.com',
-		status: 230,
+		status: 1401079649084,
 	},{
 		name: 'Albert',
 		title: 'Janitor',
 		email: 'one@one.com',
-		status: 10,
+		status: 1401079738517,
 	},{
 		name: 'Charlie',
 		title: 'Boss-man',
@@ -80,38 +83,44 @@ controller('public', ['$scope', 'socket', function ($scope, socket) {
 	}];
 }]).
 
-directive('userStatus', function () {
+directive('userStatus', ['$interval', function ($interval) {
 	return {
-		template: '{{status}} <small ng-show="delay">{{delay}}</small>',
+		template: '<span class="userStatus" ng-class="status.toLowerCase()">{{status}} <small ng-show="delay">{{delay}}</small></span>',
 		scope: {
 			userStatus: '=',
 		},
 		link: function ($scope, $ele, $attrs) {
-			var parse_delay = function (minutes) {
+			var promise = undefined;
+			var parse_delay = function (stamp) {
 				// A different design should be used!
+				var minutes = Math.floor(( Date.now() - stamp ) / 6e4);
 				return minutes + 'm';
 			};
-			var update = function (value) {
+			var update = function () {
 				if (typeof($scope.userStatus.status) === 'boolean') {
 					$scope.status = $scope.userStatus.status ? 'Active' : 'Inactive';
 					$scope.delay = undefined;
+					if (promise) {
+						$interval.cancel(promise);
+						promise = undefined;
+					}
 				} else {
 					$scope.status = 'Away';
 					$scope.delay = parse_delay( $scope.userStatus.status );
+					if (!promise) promise = $interval(update, 6e4);
 				}
-				// TODO: image support
 			};
 			$scope.$watch('userStatus', update);
 			update();
 		}
 	};
-}).
+}]).
 
 filter('orderByStatus', ['$filter', function ($filter) {
 	var isNotTrue = function (value) { return value.status !== true;  };
 	var isFalse = function (value) { return value.status === false; };
 	return function (array) {
-		return $filter('orderBy')(array, [isNotTrue, isFalse, 'status', 'name']);
+		return $filter('orderBy')(array, [isNotTrue, isFalse, '-status', 'name']);
 	};
 }]).
 
