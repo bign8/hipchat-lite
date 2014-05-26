@@ -6,63 +6,62 @@ var express = require('express'), app = express(),
 	store = require('./lib/store.js');
 
 // Data storage
-var Viewing = {}; // in ram (built from user-meta) (read from db on connect)
-var Users = {}; // track all online user statuses
-app.use( express.static(__dirname + '/www') );
+var Owned = {}; // user_id -> [socket_id, ...]
 
+var notifySockets = function (list, msg, data) {
+	if (list && list.length) for (var i = 0, l = list.length; i < l; i++)
+		io.sockets.socket( list[i] ).emit(msg, data);
+};
+var notifyUsers = function (users, msg, data) {
+	for (var i = 0, l = users.length; i < l; i++) 
+		notifySockets( Owned[ users[i].user_id ], msg, data );
+};
+var objAddAppendKey = function (obj, key, value) {
+	if ( !obj.hasOwnProperty(key) ) obj[key] = [];
+	obj[key].push(value);
+};
+var objRemDropKeyValue = function (obj, key, value) {
+	var idx = obj[key].indexOf( value );
+	obj[key].splice(idx, 1);
+	if (!obj[key].length) delete obj[key];
+};
+
+// Socket server
 io.sockets.on('connection', function (socket) {
 
-	// Join and Leave Rooms!
-	socket.on('join', function ( room_id ) {
-		if ( Viewing.hasOwnProperty(room_id) ) {
-			Viewing[room_id].push(socket.id);
-		} else {
-			Viewing[room_id] = [socket.id];
-		}
-	});
-	socket.on('leave', function ( room_id ) {
-		var idx = Viewing[room_id].indexOf( socket.id );
-		Viewing[room_id].splice(idx, 1);
-	});
+	// Message users based on db
 	socket.on('message', function (data) {
 		socket.get('user', function (err, user) {
 			data.user_id = user.user_id;
 			data.name = user.name;
-			if (Viewing.hasOwnProperty(data.room_id)) 
-				for (var i = 0, len = Viewing[data.room_id].length; i < len; i++) 
-					io.sockets.socket( Viewing[data.room_id][i] ).emit('message', data);
+			store.getRoomMembers(data.room_id, function (err, users) {
+				notifyUsers(users, 'message', data);
+			});
 			console.log(data);
 		});
 	});
 
-	// API data gathering calls
-	socket.on('history', function (data, cb) {
-		cb(['blank']);
-	});
-	socket.on('rooms', function (data, cb) {
-		cb(['Project', 'Room', 'Private']);
-	});
-
 	// Managing user statuses
-	socket.on('status', function (status) {
-		console.log(status);
-		socket.get('user', function (err, user) {
-			user.status = status;
-			Users[user.user_id] = user;
-			socket.broadcast.emit('status', user);
-		});
-	});
+	// socket.on('status', function (status) {
+	// 	console.log(status);
+	// 	socket.get('user', function (err, user) {
+	// 		user.status = status;
+	// 		socket.broadcast.emit('status', user);
+	// 	});
+	// });
 	socket.on('disconnect', function () {
+	// 	socket.get('user', function (err, user) {
+	// 		user.status = false;
+	// 		socket.broadcast.emit('status', user);
+	// 	});
 		socket.get('user', function (err, user) {
-			user.status = false;
-			delete Users[user.user_id];
-			socket.broadcast.emit('status', user);
+			console.log(user);
+			objRemDropKeyValue( Owned, user.user_id, socket.id );
 		});
-		// TODO: Delete socket.id from Viewing!
 	});
-	store.getUserFromIP(socket.handshake.address.address, function (err, user) { // Init user logon
+	store.getUserFromIP(socket.handshake.address.address, function (err, user) {
+		objAddAppendKey( Owned, user.user_id, socket.id );
 		socket.set('user', user, function () {
-			Users[user.userID] = user;
 			socket.broadcast.emit('status', user);
 		});
 	});
@@ -71,8 +70,60 @@ io.sockets.on('connection', function (socket) {
 	socket.on('getRooms', function (data, cb) {
 		store.getRooms(cb);
 	});
+
+	// Grouping Objects
+	var Room = {
+		add: function (room) {
+			// Insert db
+			Room.list();
+		},
+		set: function (room) {
+			// Update db
+			Room.list();
+		},
+		rem: function (room_id) {
+			// Delete db
+			Room.list();
+		},
+		list: function () { // For all users
+			store.getRooms(function (err, rooms) {
+				store.allRoomMembers(function (err, members) {
+					var roomObj = {};
+					for (var i = 0, l = rooms.length; i < l; i++) {
+						roomObj[ rooms[i].room_id ] = i;
+						rooms[i].members = [];
+					}
+					for (var i = 0, l = members.length; i < l; i++) 
+						rooms[ roomObj[ members[i].room_id ] ].members.push(members[i].user_id);
+					io.sockets.emit('room-list', rooms);
+				});
+			});
+		},
+		join: function (room_id) {
+			socket.get('user', function (err, user) {
+				store.addRoomMember(room_id, user.user_id, Room.list);
+			});
+		},
+		leave: function (room_id) {
+			socket.get('user', function (err, user) {
+				store.remRoomMember(room_id, user.user_id, Room.list);
+			});
+		},
+	};
+
+	socket.on('join', Room.join );
+	socket.on('leave', Room.leave);
+	// Room Listeners
+	socket.on('room-add', Room.add );
+	socket.on('room-set', Room.set );
+	socket.on('room-rem', Room.rem );
+	socket.on('room-list', Room.list );
+	socket.on('room-join', Room.join );
+	socket.on('room-leave', Room.leave );
 });
 
+// Web server
+app.use( express.static(__dirname + '/www') );
 app.get('*', function(req, res){
 	res.sendfile(__dirname + '/www/index.html');
 });

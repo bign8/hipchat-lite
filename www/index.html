@@ -17,7 +17,8 @@
 			<li id="lobby" ng-class="{'active':!activeItem}" >
 				<a href="/" ng-click="setActive(null)">Lobby</a>
 			</li>
-			<li ng-repeat="room in list" class="ng-cloak" ng-class="{'active':room.active}" >
+			<li ng-repeat="room in list()" class="ng-cloak" ng-class="{'active':room.active}" >
+				<a ng-href="/" ng-click="leave(room.room_id)" class="close">x</a>
 				<a ng-href="/{{room.privacy}}/{{room.room_id}}" ng-click="setActive(room)">{{room.name}}</a>
 			</li>
 			<!-- <li><pre>{{list | json}}</pre></li> -->
@@ -30,8 +31,19 @@
 	<div class="right" ng-view></div>
 
 	<div class="main" ng-controller="hist" ng-switch="routeParams.room_id">
-		<div ng-hide="routeParams.room_id">
-			Lobby html	
+		<div ng-hide="routeParams.room_id" ng-controller="lobby">
+			Lobby htm
+			
+			<ul ng-repeat=" room in list() | orderBy:'name' ">
+				<li>
+					{{room.name}}
+					{{room.toppic}}
+					<a ng-href="/{{room.privacy}}/{{room.room_id}}" ng-click="join(room.room_id)">Join</a>
+					<br/><br/>
+				</li>
+			</ul>
+
+			<!-- List: <pre>{{list() | json}}</pre> -->
 		</div>
 		<!-- TODO: simplify following DOM -->
 		<div ng-repeat="msg in temp = (msgs | filter:{room_id:routeParams.room_id})" ng-show="routeParams.room_id" class="chat">

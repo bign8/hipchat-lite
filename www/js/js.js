@@ -29,8 +29,8 @@ factory('socket', ['$rootScope', function ($rootScope) {
 	var socket = io.connect('http://localhost');
 	test = socket;
 
-	socket.emit('join', 1); // helper (for now)
-	socket.emit('join', 2); // helper (for now)
+	// socket.emit('join', 1); // helper (for now)
+	// socket.emit('join', 2); // helper (for now)
 
 	var update = function (cb) {
 		return function () {
@@ -125,15 +125,20 @@ filter('orderByStatus', ['$filter', function ($filter) {
 }]).
 
 // Wrong! home tab should list all rooms (side should show listening rooms)
-controller('list', ['$scope', 'socket', '$routeParams', '$location', function ($scope, socket, $routeParams, $location) {
-	$scope.list = [];
-	socket.emit('getRooms', undefined, function (err, data) {
-		$scope.list = data;
+controller('list', ['$scope', 'Room', '$routeParams', '$location', function ($scope, Room, $routeParams, $location) {
+	$scope.list = Room.open;
 
-		// Open appropriate room or redirect as necessary
+	$scope.$watch(function () {
+		return Room.open();
+	}, function (value) {
 		if ($routeParams.room_id) {
-			for (var i = 0, len = data.length; i < len; i++) if ($routeParams.room_id == data[i].room_id) $scope.setActive( data[i] );
+			$scope.activeItem = null;
+			for (var i = 0, len = value.length; i < len; i++) 
+				if ($routeParams.room_id == value[i].room_id && value[i].members.indexOf(1) >= 0) 
+					$scope.setActive( value[i] );
 			if (!$scope.activeItem) $location.path('/'); // failed to find room
+		} else {
+			$scope.setActive(null);
 		}
 	});
 
@@ -143,6 +148,8 @@ controller('list', ['$scope', 'socket', '$routeParams', '$location', function ($
 		$scope.activeItem = item;
 		if ($scope.activeItem) $scope.activeItem.active = true;
 	};
+
+	$scope.leave = Room.leave;
 }]).
 
 controller('send', ['$scope', 'socket', '$routeParams', function ($scope, socket, $routeParams) {
@@ -174,6 +181,51 @@ controller('hist', ['$scope', 'socket', '$routeParams', function ($scope, socket
 		if (!idx) return true;
 		return arr[idx].stamp.toDateString() != arr[idx-1].stamp.toDateString();
 	};
+}]).
+
+controller('lobby', ['$scope', 'Room', function ($scope, Room) {
+	$scope.list = Room.list;
+	$scope.open = Room.open;
+
+	$scope.join = Room.join;
+}]).
+
+factory('Room', ['socket', '$filter', function (socket, $filter) {
+	var list = [];
+	var open = [];
+
+	// Listening to ...
+	socket.on('room-list', function (rooms) {
+		list = rooms; // TODO: watch location + set open
+		open = $filter('filter')(rooms, function (value) {
+			return value.members.indexOf(1) >= 0; // find my userID in members
+		});
+	});
+	socket.on('room-add', function (room) {
+		exports.list.push(room);
+	});
+	socket.on('room-rem', function (room_id) {
+		// TODO: hunt, find + replace room in list
+	});
+	socket.on('room-set', function (room) {
+		// TODO: hunt, find + replace room in list
+	});
+
+	// public functionsggg
+	var exports = {
+		list: function() { return list; },
+		open: function() { return open; },
+		add: socket.emit.bind(undefined, 'room-add'), // room
+		set: socket.emit.bind(undefined, 'room-set'), // room
+		rem: socket.emit.bind(undefined, 'room-rem'), // room_id
+		join: socket.emit.bind(undefined, 'room-join'), // room_id
+		leave: socket.emit.bind(undefined, 'room-leave'), // room_id
+	};
+
+	// Init rooms
+	socket.emit('room-list');
+
+	return exports;
 }]).
 
 // http://codepen.io/y__b__y/pen/afFec + http://stackoverflow.com/a/17364716/3220865
