@@ -69,12 +69,12 @@ controller('public', ['$scope', 'socket', function ($scope, socket) {
 		name: 'Barney',
 		title: 'Janitor',
 		email: 'one@one.com',
-		status: 1401079649084,
+		status: Date.now() - 5 * 60 * 1000,
 	},{
 		name: 'Albert',
 		title: 'Janitor',
 		email: 'one@one.com',
-		status: 1401079738517,
+		status: Date.now() - 7 * 60 * 1000 - 2 * 60 * 60 * 1000 - 24 * 60 * 60 * 1000,
 	},{
 		name: 'Charlie',
 		title: 'Boss-man',
@@ -93,8 +93,15 @@ directive('userStatus', ['$interval', function ($interval) {
 			var promise = undefined;
 			var parse_delay = function (stamp) {
 				// A different design should be used!
+				var out = '';
 				var minutes = Math.floor(( Date.now() - stamp ) / 6e4);
-				return minutes + 'm';
+				var hours = Math.floor( minutes / 60 ); minutes -= hours * 60;
+				var days = Math.floor( hours / 24 ); hours -= days * 24;
+
+				if (days) out += days + 'd ';
+				if (hours) out += hours + 'h ';
+				if (minutes) out +=  minutes + 'm ';
+				return out;
 			};
 			var update = function () {
 				if (typeof($scope.userStatus.status) === 'boolean') {
