@@ -6,14 +6,7 @@ angular.module('gc-factory', []).
 factory('socket', ['$rootScope', 'whoami', function ($rootScope, whoami) {
 	var socket = io.connect('http://localhost');
 	test = socket; // DEV ONLY
-
-	socket.on('connect', function () {
-		console.log('connected');
-	});
-	socket.on('disconnect', function () {
-		console.log('disconnected');
-	});
-
+	
 	socket.on('whoami', function (iam) {
 		whoami.self = iam;
 	});

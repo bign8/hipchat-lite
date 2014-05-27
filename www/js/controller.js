@@ -96,4 +96,22 @@ controller('lobby', ['$scope', 'Room', 'whoami', function ($scope, Room, whoami)
 	$scope.join = Room.join;
 
 	$scope.whoami = whoami;
+}]).
+
+controller('loader', ['$scope', 'socket', '$timeout', function ($scope, socket, $timeout) {
+	var timeout = undefined;
+	$scope.loading = true;
+	$scope.loadWarn = false;
+
+	socket.on('connect', function () {
+		$scope.loading = false;
+		$scope.loadWarn = false;
+		$timeout.cancel( timeout );
+	});
+	socket.on('disconnect', function () {
+		$scope.loading = true;
+		timeout = $timeout(function () {
+			$scope.loadWarn = true;
+		}, 30 * 1000);
+	});
 }]);
