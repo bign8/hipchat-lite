@@ -282,6 +282,7 @@ small {
 	background-color: #fff;
 	padding: 5px 10px;
 	box-sizing: border-box;
+	margin-top: 10px;
 }
 .lobby table {
 	width: 100%;

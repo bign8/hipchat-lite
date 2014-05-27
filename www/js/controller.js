@@ -90,8 +90,10 @@ controller('hist', ['$scope', 'socket', '$routeParams', function ($scope, socket
 	};
 }]).
 
-controller('lobby', ['$scope', 'Room', function ($scope, Room) {
+controller('lobby', ['$scope', 'Room', 'whoami', function ($scope, Room, whoami) {
 	$scope.list = Room.list;
 	$scope.open = Room.open;
 	$scope.join = Room.join;
+
+	$scope.whoami = whoami;
 }]);

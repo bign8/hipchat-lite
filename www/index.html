@@ -50,6 +50,7 @@
 			</div>
 
 			<!-- List: <pre>{{list() | json}}</pre> -->
+			List: <pre>{{whoami | json}}</pre>
 		</div>
 		<!-- TODO: simplify following DOM -->
 		<div ng-repeat="msg in temp = (msgs | filter:{room_id:routeParams.room_id})" ng-show="routeParams.room_id" class="chat">

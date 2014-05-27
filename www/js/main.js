@@ -23,4 +23,6 @@ config(['$routeProvider', '$locationProvider', function ($routeProvider, $locati
 		// controller: 'all',
 	}).
 	otherwise({redirectTo: '/'});
-}]);
+}]).
+
+value('whoami', {});

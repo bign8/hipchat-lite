@@ -19,7 +19,7 @@ var notifyUsers = function (users, msg, data) {
 };
 var objAddAppendKey = function (obj, key, value) {
 	if ( !obj.hasOwnProperty(key) ) obj[key] = [];
-	obj[key].push(value);
+	if (obj[key].indexOf(value) < 0) obj[key].push(value);
 };
 var objRemDropKeyValue = function (obj, key, value) {
 	var idx = obj[key].indexOf( value );
@@ -62,14 +62,10 @@ io.sockets.on('connection', function (socket) {
 	});
 	store.getUserFromIP(socket.handshake.address.address, function (err, user) {
 		objAddAppendKey( Owned, user.user_id, socket.id );
+		socket.emit('whoami', user);
 		socket.set('user', user, function () {
 			socket.broadcast.emit('status', user);
 		});
-	});
-
-	// Init Client
-	socket.on('getRooms', function (data, cb) {
-		store.getRooms(cb);
 	});
 
 	// Grouping Objects

@@ -3,9 +3,20 @@ var test = undefined;
 angular.module('gc-factory', []).
 
 // http://www.html5rocks.com/en/tutorials/frameworks/angular-websockets/
-factory('socket', ['$rootScope', function ($rootScope) {
+factory('socket', ['$rootScope', 'whoami', function ($rootScope, whoami) {
 	var socket = io.connect('http://localhost');
 	test = socket; // DEV ONLY
+
+	socket.on('connect', function () {
+		console.log('connected');
+	});
+	socket.on('disconnect', function () {
+		console.log('disconnected');
+	});
+
+	socket.on('whoami', function (iam) {
+		whoami.self = iam;
+	});
 
 	var update = function (cb) {
 		return function () {
