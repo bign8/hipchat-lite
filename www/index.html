@@ -14,7 +14,7 @@
 			<a href="#"><img src="#" alt="GChat" height="58"></a>
 		</div>
 		<ul class="tabs" ng-controller="list">
-			<li id="lobby" ng-class="{'active':!activeItem}" >
+			<li ng-class="{'active':!activeItem}" >
 				<a href="/" ng-click="setActive(null)">Lobby</a>
 			</li>
 			<li ng-repeat="room in list() | orderByPrivacy" class="ng-cloak" ng-class="{'active':room.active}" >
@@ -31,17 +31,23 @@
 	<div class="right" ng-view></div>
 
 	<div class="main" ng-controller="hist" ng-switch="routeParams.room_id">
-		<div ng-hide="routeParams.room_id" ng-controller="lobby">
-			Lobby htm
-			
-			<ul ng-repeat=" room in list() | orderBy:'name' ">
-				<li>
-					{{room.name}}
-					{{room.toppic}}
-					<a ng-href="/{{room.privacy}}/{{room.room_id}}" ng-click="join(room.room_id)">Join</a>
-					<br/><br/>
-				</li>
-			</ul>
+		<div class="lobby" ng-hide="routeParams.room_id" ng-controller="lobby">
+
+			<h3>Available Rooms</h3>
+			<div class="well">
+				<table>
+					<tbody>
+						<tr ng-repeat=" room in list() | orderByPrivacy ">
+							<td>
+								<a ng-href="/{{room.privacy}}/{{room.room_id}}" ng-click="join(room.room_id)">{{room.name}}</a><br/>
+								<small>{{room.toppic}}</small>
+							</td>
+							<td>{{room.members.length | pluralize:' member'}}</td>
+							<td>...</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 
 			<!-- List: <pre>{{list() | json}}</pre> -->
 		</div>

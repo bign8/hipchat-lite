@@ -12,4 +12,12 @@ filter('orderByPrivacy', ['$filter', function ($filter) {
 	return function (array) {
 		return $filter('orderBy')(array, ['-privacy', 'name'])
 	};
-}]);
+}]).
+
+filter('pluralize', function () {
+	return function (number, singular, plural) {
+		singular = singular || ' item';
+		plural = plural || (singular + 's');
+		return number + ((number != 1) ? plural : singular);
+	};
+});
