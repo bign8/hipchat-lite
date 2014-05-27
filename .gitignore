@@ -1,3 +1,4 @@
 node_modules
 *.sublime-*
 lib/gravatar-proxy/*.jpg
+old
