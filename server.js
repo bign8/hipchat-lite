@@ -1,4 +1,5 @@
 var express = require('express'), app = express(), 
+	gravatarProxy = require('./lib/gravatar-proxy.js'),
 	server = require('http').createServer(app).listen(80),
 	io = require('socket.io').listen(server, {
 		'log level': 2
@@ -124,6 +125,9 @@ io.sockets.on('connection', function (socket) {
 
 // Web server
 app.use( express.static(__dirname + '/www') );
-app.get('*', function(req, res){
+
+app.all('/gravatar/:hash', gravatarProxy());
+
+app.all('*', function(req, res){
 	res.sendfile(__dirname + '/www/index.html');
 });

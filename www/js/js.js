@@ -224,7 +224,6 @@ factory('Room', ['socket', '$filter', function (socket, $filter) {
 
 	// Init rooms
 	socket.emit('room-list');
-
 	return exports;
 }]).
 
