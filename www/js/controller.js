@@ -9,7 +9,7 @@ controller('private', ['$scope', 'socket', '$routeParams', function ($scope, soc
 	};
 }]).
 
-controller('public', ['$scope', 'socket', function ($scope, socket) {
+controller('public', ['$scope', 'socket', 'Room', '$routeParams', function ($scope, socket, Room, $routeParams) {
 	$scope.members = [{
 		name: 'Nathan Woods',
 		title: 'Developer',
@@ -31,6 +31,17 @@ controller('public', ['$scope', 'socket', function ($scope, socket) {
 		email: 'two@one.com',
 		status: false,
 	}];
+
+	// TODO: w/o watch
+	$scope.room = {};
+	$scope.$watch(function () {
+		return [$routeParams.room_id].concat(Room.list());
+	}, function (value) {
+		var list = Room.list();
+		for (var i = 0, l = list.length; i < l; i++) 
+			if (list[i].room_id == value[0]) 
+				$scope.room = list[i];
+	}, true);
 }]).
 
 controller('list', ['$scope', 'Room', '$routeParams', '$location', function ($scope, Room, $routeParams, $location) {

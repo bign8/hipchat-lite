@@ -220,6 +220,9 @@ body > div { position: absolute; }
 .right > .public {
 	padding: 5px;
 }
+.right > .public > p {
+	padding-bottom: 20px;
+}
 .right > .public .members {
 	list-style: none;
 }

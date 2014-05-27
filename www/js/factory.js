@@ -6,9 +6,12 @@ angular.module('gc-factory', []).
 factory('socket', ['$rootScope', 'whoami', function ($rootScope, whoami) {
 	var socket = io.connect('http://localhost');
 	test = socket; // DEV ONLY
-	
+
 	socket.on('whoami', function (iam) {
 		whoami.self = iam;
+	});
+	socket.on('connect', function () {
+		socket.emit('room-list');
 	});
 
 	var update = function (cb) {
