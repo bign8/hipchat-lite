@@ -17,7 +17,7 @@
 			<li id="lobby" ng-class="{'active':!activeItem}" >
 				<a href="/" ng-click="setActive(null)">Lobby</a>
 			</li>
-			<li ng-repeat="room in list()" class="ng-cloak" ng-class="{'active':room.active}" >
+			<li ng-repeat="room in list() | orderByPrivacy" class="ng-cloak" ng-class="{'active':room.active}" >
 				<a ng-href="/" ng-click="leave(room.room_id)" class="close">x</a>
 				<a ng-href="/{{room.privacy}}/{{room.room_id}}" ng-click="setActive(room)">{{room.name}}</a>
 			</li>

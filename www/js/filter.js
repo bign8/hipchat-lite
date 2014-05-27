@@ -6,4 +6,10 @@ filter('orderByStatus', ['$filter', function ($filter) {
 	return function (array) {
 		return $filter('orderBy')(array, [isNotTrue, isFalse, '-status', 'name']);
 	};
+}]).
+
+filter('orderByPrivacy', ['$filter', function ($filter) {
+	return function (array) {
+		return $filter('orderBy')(array, ['-privacy', 'name'])
+	};
 }]);
