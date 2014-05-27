@@ -230,6 +230,8 @@ body > div { position: absolute; }
 }
 .right > .public .members li img {
 	float: left;
+	height: 40px;
+	width: 40px;
 }
 .right > .public .members li p {
 	margin: 3px 0 0px 43px;
