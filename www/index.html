@@ -18,7 +18,7 @@
 				<a href="/" ng-click="setActive(null)">Lobby</a>
 			</li>
 			<li ng-repeat="room in list() | orderByPrivacy" class="ng-cloak" ng-class="{'active':room.active}" >
-				<a ng-href="/" ng-click="leave(room.room_id)" class="close">x</a>
+				<a ng-href="/" ng-click="leave(room.room_id)" class="close">&times;</a>
 				<a ng-href="/{{room.privacy}}/{{room.room_id}}" ng-click="setActive(room)">{{room.name}}</a>
 			</li>
 			<!-- <li><pre>{{list | json}}</pre></li> -->
@@ -34,7 +34,7 @@
 		<div class="lobby" ng-hide="routeParams.room_id" ng-controller="lobby">
 
 			<h3>Available Rooms</h3>
-			<div class="well">
+			<form class="well">
 				<table>
 					<tbody>
 						<tr ng-repeat=" room in list() | orderByPrivacy ">
@@ -43,11 +43,26 @@
 								<small>{{room.toppic}}</small>
 							</td>
 							<td>{{room.members.length | pluralize:' member'}}</td>
-							<td>...</td>
+							<td>{{room.privacy}}</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="text" placeholder="Title" ng-model="new_room.title" style="width:100%;margin-bottom:5px" required /><br/>
+								<input type="text" placeholder="Topic" ng-model="new_room.topic" style="width:100%"/>
+							</td>
+							<td>
+								<label><input type="radio" ng-model="new_room.privacy" value="public" name="room_privacy" /> Public</label><br />
+								<label><input type="radio" ng-model="new_room.privacy" value="private" name="room_privacy" /> Private</label>
+							</td>
+							<td>
+								<button type="button" ng-click="add()">Add</button>
+							</td>
 						</tr>
 					</tbody>
 				</table>
-			</div>
+			</form>
+
+			<pre>{{new_room | json}}</pre>
 
 			<!-- List: <pre>{{list() | json}}</pre> -->
 			List: <pre>{{whoami | json}}</pre>

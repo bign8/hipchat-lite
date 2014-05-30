@@ -381,3 +381,13 @@ small {
 	-o-box-shadow: #444444 0 0 20px;
 	box-shadow: #444444 0 0 20px;
 }
+
+/* form styles */
+form input[type="text"] {
+	border-radius: 3px;
+	padding: 2px 3px;
+	border: 1px solid #B1A9BB;
+}
+form button {
+	padding: 5px;
+}

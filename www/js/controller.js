@@ -107,6 +107,16 @@ controller('lobby', ['$scope', 'Room', 'whoami', function ($scope, Room, whoami)
 	$scope.join = Room.join;
 
 	$scope.whoami = whoami;
+
+	var blank = function () {
+		return {
+			privacy: 'public'
+		};
+	};
+	$scope.new_room = blank();
+	$scope.add = function () {
+		$scope.new_room = blank();
+	};
 }]).
 
 controller('loader', ['$scope', 'socket', '$timeout', function ($scope, socket, $timeout) {
