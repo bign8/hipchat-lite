@@ -71,8 +71,13 @@ io.sockets.on('connection', function (socket) {
 	// Grouping Objects
 	var Room = {
 		add: function (room) {
-			// Insert db
-			Room.list();
+			socket.get('user', function (err, user) {
+				room.owner_id = user.user_id;
+				store.addRoom(room, function (err) {
+					console.log(err);
+					Room.list();
+				});
+			});
 		},
 		set: function (room) {
 			// Update db

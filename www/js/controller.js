@@ -115,6 +115,7 @@ controller('lobby', ['$scope', 'Room', 'whoami', function ($scope, Room, whoami)
 	};
 	$scope.new_room = blank();
 	$scope.add = function () {
+		Room.add($scope.new_room);
 		$scope.new_room = blank();
 	};
 }]).
