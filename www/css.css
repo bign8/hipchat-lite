@@ -382,17 +382,6 @@ small {
 	box-shadow: #444444 0 0 20px;
 }
 
-/* form styles */
-form input[type="text"] {
-	border-radius: 3px;
-	padding: 2px 3px;
-	border: 1px solid #B1A9BB;
-	box-sizing: border-box;
-}
-form button {
-	padding: 5px;
-}
-
 /* room edit module */
 .room-edit {
 	position: absolute;
@@ -401,12 +390,34 @@ form button {
 	bottom: 0;
 	padding: 0 3px;
 }
-.room-edit form input, 
-.room-edit form button {
+
+/* shared styles */
+button.close {
+	float: right;
+	border: none;
+	background-color: transparent;
+	font-size: 25px;
+	line-height: 25px;
+	margin: 0;
+	padding: 0;
+	color: #CCCCCC;
+}
+button.close:hover {
+	color: black;
+	cursor: pointer;
+}
+form input[type="text"], form button.control {
+	border-radius: 3px;
+	padding: 2px 3px;
+	border: 1px solid #B1A9BB;
+	box-sizing: border-box;
 	width: 100%;
 	margin-bottom: 5px;
-	padding: 2px 3px;
 }
-.room-edit form input:last-child {
+form input[type="text"]:last-child, form button:last-child {
 	margin-bottom: 0;
+}
+form button {
+	padding: 5px;
+	cursor: pointer;
 }

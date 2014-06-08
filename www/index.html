@@ -43,7 +43,10 @@
 								<small>{{room.toppic}}</small>
 							</td>
 							<td>{{room.members.length | pluralize:' member'}}</td>
-							<td>{{room.privacy}}</td>
+							<td>
+								<button type="button" class="close" ng-click="rem(room)">&times;</button>
+								{{room.privacy}}
+							</td>
 						</tr>
 						<tr>
 							<td>

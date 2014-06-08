@@ -118,6 +118,10 @@ controller('lobby', ['$scope', 'Room', 'whoami', function ($scope, Room, whoami)
 		Room.add($scope.new_room);
 		$scope.new_room = blank();
 	};
+	$scope.rem = function (room) {
+		var check = confirm("Delete '" + room.name + "'?");
+		if (check) Room.rem( room.room_id );
+	};
 }]).
 
 controller('loader', ['$scope', 'socket', '$timeout', function ($scope, socket, $timeout) {

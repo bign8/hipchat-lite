@@ -80,8 +80,7 @@ io.sockets.on('connection', function (socket) {
 			store.setRoom(room, Room.list);
 		},
 		rem: function (room_id) {
-			// Delete db
-			Room.list();
+			store.remRoom(room_id, Room.list);
 		},
 		list: function () { // For all users
 			store.getRooms(function (err, rooms) {
