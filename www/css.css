@@ -387,7 +387,26 @@ form input[type="text"] {
 	border-radius: 3px;
 	padding: 2px 3px;
 	border: 1px solid #B1A9BB;
+	box-sizing: border-box;
 }
 form button {
 	padding: 5px;
+}
+
+/* room edit module */
+.room-edit {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 0 3px;
+}
+.room-edit form input, 
+.room-edit form button {
+	width: 100%;
+	margin-bottom: 5px;
+	padding: 2px 3px;
+}
+.room-edit form input:last-child {
+	margin-bottom: 0;
 }

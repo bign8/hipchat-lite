@@ -136,4 +136,8 @@ controller('loader', ['$scope', 'socket', '$timeout', function ($scope, socket, 
 			$scope.loadWarn = true;
 		}, 30 * 1000);
 	});
+}]).
+
+controller('modify', ['$scope', 'Room', function ($scope, Room) {
+	$scope.set = Room.set.bind( Room );
 }]);

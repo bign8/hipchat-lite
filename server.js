@@ -73,15 +73,11 @@ io.sockets.on('connection', function (socket) {
 		add: function (room) {
 			socket.get('user', function (err, user) {
 				room.owner_id = user.user_id;
-				store.addRoom(room, function (err) {
-					console.log(err);
-					Room.list();
-				});
+				store.addRoom(room, Room.list);
 			});
 		},
 		set: function (room) {
-			// Update db
-			Room.list();
+			store.setRoom(room, Room.list);
 		},
 		rem: function (room_id) {
 			// Delete db
