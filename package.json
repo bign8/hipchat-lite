@@ -1,10 +1,10 @@
 {
-  "name": "Git-Chat-GUI",
+  "name": "hipchat-lite",
   "scripts": {
     "start": "node server.js"
   },
   "version": "0.0.0",
-  "description": "Git Chat server gui",
+  "description": "A Node.js version of HipChat",
   "main": "server.js",
   "dependencies": {
     "express": "~4.2.0",
